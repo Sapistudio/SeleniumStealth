@@ -1,0 +1,11 @@
+{
+    "name": "sapistudio/seleniumstealth",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "illuminate/filesystem": "^5.4"
+    },
+    "autoload": {
+         "psr-4": { "SapiStudio\\SeleniumStealth\\": "src/" }
+    }
+}
