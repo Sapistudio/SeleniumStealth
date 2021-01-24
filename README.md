@@ -16,7 +16,7 @@ $ composer require sapistudio/seleniumstealth
 ## Usage
 For now , it can run with php-webdriver or laravel-panther client
 After initializing your desired webdriver client,run stelath command
-```python
+```php
 $this->client = (new \SapiStudio\SeleniumStealth\SeleniumStealth($this->client))->usePhpWebriverClient()->makeStealth();
 
 # options.add_argument("--headless")
