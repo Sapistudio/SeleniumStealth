@@ -1,6 +1,5 @@
 <?php
 namespace SapiStudio\SeleniumStealth;
-use Illuminate\Filesystem\Filesystem;
 
 class SeleniumStealth
 {
@@ -12,24 +11,48 @@ class SeleniumStealth
         'user_agent'                => null,
         'languages'                 => ["en-US", "en"],
         'vendor'                    => "Google Inc.",
-        'platform'                  => null,
+        'platform'                  => "Win32",
         'webgl_vendor'              => "Intel Inc.",
         'renderer'                  => "Intel Iris OpenGL Engine",
         'fix_hairline'              => false,
         'run_on_insecure_origins'   => false
     ];
-
+    
+    /**
+     * SeleniumStealth::loadFileData()
+     * 
+     * @return
+     */
+    public static function loadFileData($filepath = null){
+        return (!$filepath || !is_file($filepath)) ? false : file_get_contents($filepath);    
+    }
+    
+    /**
+     * SeleniumStealth::__set()
+     * 
+     * @return
+     */
     public function __set($name, $value)
     {
         self::$mainArgsNames[$name] = $value;
         return $this;
     }
 
+    /**
+     * SeleniumStealth::__get()
+     * 
+     * @return
+     */
     public function __get($name)
     {
         return (isset(self::$mainArgsNames[$name])) ? self::$mainArgsNames[$name] : false;
     }
     
+    /**
+     * SeleniumStealth::__construct()
+     * 
+     * @return
+     */
     public function __construct()
     {
         $arguments  = func_get_args();
@@ -47,11 +70,15 @@ class SeleniumStealth
         }
         if ($customArgs)
             self::$mainArgsNames['kWargs'] = $customArgs;
-        $this->filesystem   = new Filesystem();
         $this->ua_languages = implode(',',$this->languages);
         $this->jsPath = dirname(__DIR__).DIRECTORY_SEPARATOR .'js'.DIRECTORY_SEPARATOR;
     }
     
+    /**
+     * SeleniumStealth::usePantherClient()
+     * 
+     * @return
+     */
     public function usePantherClient(){
         $this->currentClientType = self::PANTHER_CLIENT_TYPE;
         if (!$this->driver instanceof \Symfony\Component\Panther\Client)
@@ -59,6 +86,11 @@ class SeleniumStealth
         return $this;
     }
     
+    /**
+     * SeleniumStealth::usePhpWebriverClient()
+     * 
+     * @return
+     */
     public function usePhpWebriverClient(){
         $this->currentClientType = self::PHPWEBDRIVER_CLIENT_TYPE;
         if (!$this->driver instanceof \Facebook\WebDriver\Remote\RemoteWebDriver)
@@ -66,15 +98,21 @@ class SeleniumStealth
         return $this;
     }
     
+    /**
+     * SeleniumStealth::makeStealth()
+     * 
+     * @return
+     */
     public function makeStealth(){
         if(!$this->currentClientType)
             $this->usePantherClient();
         $this->with_utils();
-        $this->chrome_app();
+             
+        $this->chrome_app();  
         $this->chrome_runtime();
         $this->iframe_content_window();
         $this->media_codecs();
-        $this->navigator_languages();
+        //$this->navigator_languages();
         $this->navigator_permissions();
         $this->navigator_plugins();
         $this->navigator_vendor();
@@ -82,59 +120,115 @@ class SeleniumStealth
         $this->user_agent_override();
         $this->webgl_vendor_override();
         $this->window_outerdimensions();
+        /** */
         return $this->driver;
     }
     
+    /**
+     * SeleniumStealth::with_utils()
+     * 
+     * @return
+     */
     protected function with_utils()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get($this->jsPath."utils.js"));
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."utils.js"));
     }
 
+    /**
+     * SeleniumStealth::chrome_app()
+     * 
+     * @return
+     */
     protected function chrome_app()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get($this->jsPath."chrome.app.js"));
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."chrome.app.js"));
     }
 
+    /**
+     * SeleniumStealth::chrome_runtime()
+     * 
+     * @return
+     */
     protected function chrome_runtime()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get($this->jsPath."chrome.runtime.js"),$this->run_on_insecure_origins);
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."chrome.runtime.js"),$this->run_on_insecure_origins);
     }
 
+    /**
+     * SeleniumStealth::iframe_content_window()
+     * 
+     * @return
+     */
     protected function iframe_content_window()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get($this->jsPath."iframe.contentWindow.js"));
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."iframe.contentWindow.js"));
     }
 
+    /**
+     * SeleniumStealth::media_codecs()
+     * 
+     * @return
+     */
     protected function media_codecs()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get($this->jsPath."media.codecs.js"));
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."media.codecs.js"));
     }
 
+    /**
+     * SeleniumStealth::navigator_languages()
+     * 
+     * @return
+     */
     protected function navigator_languages()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get($this->jsPath."navigator.languages.js"),$this->languages);
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."navigator.languages.js"),$this->languages);
     }
 
+    /**
+     * SeleniumStealth::navigator_permissions()
+     * 
+     * @return
+     */
     protected function navigator_permissions()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get($this->jsPath."navigator.permissions.js"));
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."navigator.permissions.js"));
     }
 
+    /**
+     * SeleniumStealth::navigator_plugins()
+     * 
+     * @return
+     */
     protected function navigator_plugins()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get($this->jsPath."navigator.plugins.js"));
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."navigator.plugins.js"));
     }
 
+    /**
+     * SeleniumStealth::navigator_vendor()
+     * 
+     * @return
+     */
     protected function navigator_vendor()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get($this->jsPath."navigator.vendor.js"),$this->vendor);
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."navigator.vendor.js"),$this->vendor);
     }
 
+    /**
+     * SeleniumStealth::navigator_webdriver()
+     * 
+     * @return
+     */
     protected function navigator_webdriver()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get($this->jsPath."navigator.webdriver.js"));
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."navigator.webdriver.js"));
     }
 
+    /**
+     * SeleniumStealth::user_agent_override()
+     * 
+     * @return
+     */
     protected function user_agent_override()
     {
         $ua = (!$this->user_agent) ? $this->getUa() : $this->user_agent;
@@ -149,21 +243,41 @@ class SeleniumStealth
         return $this;
     }
 
+    /**
+     * SeleniumStealth::webgl_vendor_override()
+     * 
+     * @return
+     */
     protected function webgl_vendor_override()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get("/home/admin/web/cacamaca.ro/public_html/js/webgl.vendor.js"),$this->webgl_vendor, $this->renderer);
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."webgl.vendor.js"),$this->webgl_vendor, $this->renderer);
     }
 
+    /**
+     * SeleniumStealth::window_outerdimensions()
+     * 
+     * @return
+     */
     protected function window_outerdimensions()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get("/home/admin/web/cacamaca.ro/public_html/js/window.outerdimensions.js"));
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."window.outerdimensions.js"));
     }
 
+    /**
+     * SeleniumStealth::hairline_fix()
+     * 
+     * @return
+     */
     protected function hairline_fix()
     {
-        return $this->evaluateOnNewDocument($this->filesystem->get("/home/admin/web/cacamaca.ro/public_html/js/hairline.fix.js"));
+        return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."hairline.fix.js"));
     }
 
+    /**
+     * SeleniumStealth::evaluateOnNewDocument()
+     * 
+     * @return
+     */
     protected function evaluateOnNewDocument($pagefunction)
     {
         $args = func_get_args();
@@ -172,12 +286,22 @@ class SeleniumStealth
         $this->getDriver()->executeCustomCommand('/session/:sessionId/goog/cdp/execute','POST',['cmd' => 'Page.addScriptToEvaluateOnNewDocument', 'params' => (object)['source' => $jsCode]]);
     }
 
+    /**
+     * SeleniumStealth::evaluationString()
+     * 
+     * @return
+     */
     protected function evaluationString($pagefunction, $args = [])
     {
         $args = array_map(function ($a) {return var_export($a, true); }, $args);
         return '(' . $pagefunction . ')(' . implode(',', $args) . ')';
     }
     
+    /**
+     * SeleniumStealth::getDriver()
+     * 
+     * @return
+     */
     protected function getDriver(){
         switch($this->currentClientType){
             case self::PANTHER_CLIENT_TYPE:
@@ -191,6 +315,11 @@ class SeleniumStealth
         }
     }
     
+    /**
+     * SeleniumStealth::getUa()
+     * 
+     * @return
+     */
     protected function getUa(){
         //$this->getDriver()->executeCustomCommand('/session/:sessionId/goog/cdp/execute','POST',['cmd' => 'Browser.getVersion', 'params' => (object)[]])
         return $this->getDriver()->executeScript("return navigator.userAgent;");
