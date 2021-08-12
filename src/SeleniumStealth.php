@@ -120,6 +120,8 @@ class SeleniumStealth
         $this->user_agent_override();
         $this->webgl_vendor_override();
         $this->window_outerdimensions();
+        if($this->fix_hairline)
+            $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."hairline.fix.js"))
         /** */
         return $this->driver;
     }
@@ -152,6 +154,17 @@ class SeleniumStealth
     protected function chrome_runtime()
     {
         return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."chrome.runtime.js"),$this->run_on_insecure_origins);
+    }
+    
+    /**
+     * SeleniumStealth::fixHairline()
+     * 
+     * @return
+     */
+    protected function fixHairline()
+    {
+        $this->fix_hairline = true;
+        return $this;
     }
 
     /**
