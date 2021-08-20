@@ -121,7 +121,7 @@ class SeleniumStealth
         $this->webgl_vendor_override();
         $this->window_outerdimensions();
         if($this->fix_hairline)
-            $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."hairline.fix.js"))
+            $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."hairline.fix.js"));
         /** */
         return $this->driver;
     }
