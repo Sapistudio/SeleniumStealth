@@ -5,7 +5,7 @@ class SeleniumStealth
 {
     const PANTHER_CLIENT_TYPE       = 'panther';
     const PHPWEBDRIVER_CLIENT_TYPE  = 'php_webdriver';
-    
+
     protected static $mainArgsNames = [
         'driver'                    => null,
         'user_agent'                => null,
@@ -17,19 +17,19 @@ class SeleniumStealth
         'fix_hairline'              => false,
         'run_on_insecure_origins'   => false
     ];
-    
+
     /**
      * SeleniumStealth::loadFileData()
-     * 
+     *
      * @return
      */
     public static function loadFileData($filepath = null){
-        return (!$filepath || !is_file($filepath)) ? false : file_get_contents($filepath);    
+        return (!$filepath || !is_file($filepath)) ? false : file_get_contents($filepath);
     }
-    
+
     /**
      * SeleniumStealth::__set()
-     * 
+     *
      * @return
      */
     public function __set($name, $value)
@@ -40,17 +40,17 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::__get()
-     * 
+     *
      * @return
      */
     public function __get($name)
     {
         return (isset(self::$mainArgsNames[$name])) ? self::$mainArgsNames[$name] : false;
     }
-    
+
     /**
      * SeleniumStealth::__construct()
-     * 
+     *
      * @return
      */
     public function __construct()
@@ -73,10 +73,10 @@ class SeleniumStealth
         $this->ua_languages = implode(',',$this->languages);
         $this->jsPath = dirname(__DIR__).DIRECTORY_SEPARATOR .'js'.DIRECTORY_SEPARATOR;
     }
-    
+
     /**
      * SeleniumStealth::usePantherClient()
-     * 
+     *
      * @return
      */
     public function usePantherClient(){
@@ -85,10 +85,10 @@ class SeleniumStealth
             throw new \Exception('This is not a panther client');
         return $this;
     }
-    
+
     /**
      * SeleniumStealth::usePhpWebriverClient()
-     * 
+     *
      * @return
      */
     public function usePhpWebriverClient(){
@@ -97,18 +97,18 @@ class SeleniumStealth
             throw new \Exception('This is not a php webdriver client');
         return $this;
     }
-    
+
     /**
      * SeleniumStealth::makeStealth()
-     * 
+     *
      * @return
      */
     public function makeStealth(){
         if(!$this->currentClientType)
             $this->usePantherClient();
         $this->with_utils();
-             
-        $this->chrome_app();  
+
+        $this->chrome_app();
         $this->chrome_runtime();
         $this->iframe_content_window();
         $this->media_codecs();
@@ -120,15 +120,16 @@ class SeleniumStealth
         $this->user_agent_override();
         $this->webgl_vendor_override();
         $this->window_outerdimensions();
+        $this->additionalEvades();
         if($this->fix_hairline)
             $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."hairline.fix.js"));
         /** */
         return $this->driver;
     }
-    
+
     /**
      * SeleniumStealth::with_utils()
-     * 
+     *
      * @return
      */
     protected function with_utils()
@@ -138,7 +139,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::chrome_app()
-     * 
+     *
      * @return
      */
     protected function chrome_app()
@@ -148,17 +149,17 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::chrome_runtime()
-     * 
+     *
      * @return
      */
     protected function chrome_runtime()
     {
         return $this->evaluateOnNewDocument(self::loadFileData($this->jsPath."chrome.runtime.js"),$this->run_on_insecure_origins);
     }
-    
+
     /**
      * SeleniumStealth::fixHairline()
-     * 
+     *
      * @return
      */
     protected function fixHairline()
@@ -169,7 +170,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::iframe_content_window()
-     * 
+     *
      * @return
      */
     protected function iframe_content_window()
@@ -179,7 +180,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::media_codecs()
-     * 
+     *
      * @return
      */
     protected function media_codecs()
@@ -189,7 +190,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::navigator_languages()
-     * 
+     *
      * @return
      */
     protected function navigator_languages()
@@ -199,7 +200,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::navigator_permissions()
-     * 
+     *
      * @return
      */
     protected function navigator_permissions()
@@ -209,7 +210,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::navigator_plugins()
-     * 
+     *
      * @return
      */
     protected function navigator_plugins()
@@ -219,7 +220,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::navigator_vendor()
-     * 
+     *
      * @return
      */
     protected function navigator_vendor()
@@ -229,7 +230,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::navigator_webdriver()
-     * 
+     *
      * @return
      */
     protected function navigator_webdriver()
@@ -239,7 +240,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::user_agent_override()
-     * 
+     *
      * @return
      */
     protected function user_agent_override()
@@ -258,7 +259,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::webgl_vendor_override()
-     * 
+     *
      * @return
      */
     protected function webgl_vendor_override()
@@ -268,7 +269,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::window_outerdimensions()
-     * 
+     *
      * @return
      */
     protected function window_outerdimensions()
@@ -278,7 +279,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::hairline_fix()
-     * 
+     *
      * @return
      */
     protected function hairline_fix()
@@ -288,7 +289,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::evaluateOnNewDocument()
-     * 
+     *
      * @return
      */
     protected function evaluateOnNewDocument($pagefunction)
@@ -301,7 +302,7 @@ class SeleniumStealth
 
     /**
      * SeleniumStealth::evaluationString()
-     * 
+     *
      * @return
      */
     protected function evaluationString($pagefunction, $args = [])
@@ -309,10 +310,10 @@ class SeleniumStealth
         $args = array_map(function ($a) {return var_export($a, true); }, $args);
         return '(' . $pagefunction . ')(' . implode(',', $args) . ')';
     }
-    
+
     /**
      * SeleniumStealth::getDriver()
-     * 
+     *
      * @return
      */
     protected function getDriver(){
@@ -324,17 +325,27 @@ class SeleniumStealth
                 return $this->driver;
                 break;
             default:
-               throw new \Exception('Invalid driver client'); 
+               throw new \Exception('Invalid driver client');
         }
     }
-    
+
     /**
      * SeleniumStealth::getUa()
-     * 
+     *
      * @return
      */
     protected function getUa(){
         //$this->getDriver()->executeCustomCommand('/session/:sessionId/goog/cdp/execute','POST',['cmd' => 'Browser.getVersion', 'params' => (object)[]])
         return $this->getDriver()->executeScript("return navigator.userAgent;");
+    }
+
+    /**
+     * @return void
+     */
+    protected function additionalEvades()
+    {
+        $this->evaluateOnNewDocument(self::loadFileData($this->jsPath . '/hook_remove_cdc_props.js'));
+        $this->evaluateOnNewDocument(self::loadFileData($this->jsPath  . '/max_touch_points.js'));
+        $this->evaluateOnNewDocument(self::loadFileData($this->jsPath . '/navigator.brave.js'));
     }
 }
