@@ -36,4 +36,3 @@ $driver = (new SeleniumStealth(driver))->makeStealth();
 
 ```
 After this you run your usual commands with the driver
-
